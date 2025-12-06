@@ -1,0 +1,14 @@
+package com.velu.MovieBookingApplication.dto;
+import lombok.Data;
+
+import java.time.LocalDate;
+
+@Data
+public class MovieDTO {
+    private String name;
+    private String desc;
+    private String genre;
+    private String language;
+    private Integer duration;
+    private LocalDate release_date;
+}
