@@ -6,7 +6,7 @@ import java.time.LocalDate;
 @Data
 public class MovieDTO {
     private String name;
-    private String desc;
+    private String description;
     private String genre;
     private String language;
     private Integer duration;

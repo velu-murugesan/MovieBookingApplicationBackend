@@ -7,6 +7,7 @@ import com.velu.MovieBookingApplication.entity.Booking;
 import com.velu.MovieBookingApplication.entity.Show;
 import com.velu.MovieBookingApplication.entity.User;
 import com.velu.MovieBookingApplication.enums.BookingStatus;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -16,8 +17,11 @@ import java.util.stream.Collectors;
 @Service
 public class BookingService {
 
+    @Autowired
     private BookingRepository bookingRepository;
+    @Autowired
     private ShowRepository showRepository;
+    @Autowired
     private UserRepository userRepository;
     public Booking createBooking(BookingDto bookingDto) {
 
@@ -90,7 +94,6 @@ public class BookingService {
 
         Booking booking = new Booking();
 
-        booking.setBookingStatus(bookingDto.getBookingStatus());
         booking.setBookingDate(bookingDto.getBookingDate());
         booking.setShow(show);
         booking.setUser(user);
@@ -151,7 +154,7 @@ public class BookingService {
     }
 
     public List<Booking> getBookingbyStatus(BookingStatus bookingStatus) {
-         return  bookingRepository.findBookingByStatus(bookingStatus);
+         return  bookingRepository.findBookingByBookingStatus(bookingStatus);
     }
 
     public void deleteBooking(Long id) {

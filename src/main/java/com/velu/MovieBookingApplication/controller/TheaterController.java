@@ -10,13 +10,13 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/theater")
+@RequestMapping("/api/theaters")
 public class TheaterController {
 
     @Autowired
     private TheaterService theaterService;
 
-    @PostMapping("/addtheater")
+    @PostMapping()
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Theater> addTheater(@RequestBody TheaterDTO theaterDTO){
          return ResponseEntity.ok(theaterService.addTheater(theaterDTO));

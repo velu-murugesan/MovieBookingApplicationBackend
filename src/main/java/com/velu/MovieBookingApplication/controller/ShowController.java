@@ -11,18 +11,18 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/show")
+@RequestMapping("/api/shows")
 public class ShowController {
 
     @Autowired
     private ShowService showService;
 
-    @PostMapping("/createshow")
+    @PostMapping()
     public ResponseEntity<Show> createShow(@RequestBody ShowDTO showDTO){
           return ResponseEntity.ok(showService.createShow(showDTO));
     }
 
-    @GetMapping("/getallshows")
+    @GetMapping()
     public ResponseEntity<List<Show>> getAllShows(){
        return ResponseEntity.ok(showService.getAllShows());
     }
@@ -37,12 +37,12 @@ public class ShowController {
         return ResponseEntity.ok(showService.getAllShowsByTheater(theaterId));
     }
 
-    @PutMapping("/updateshow/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<Show> updateShow(@PathVariable Long id,@RequestBody ShowDTO showDTO){
         return  ResponseEntity.ok(showService.updateShow(id,showDTO));
     }
 
-    @DeleteMapping("/deleteshow/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteShow(@PathVariable Long id){
         showService.deleteShow(id);
         return ResponseEntity.ok().build();

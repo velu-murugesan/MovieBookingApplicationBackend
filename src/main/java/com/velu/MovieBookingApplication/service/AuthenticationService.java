@@ -1,6 +1,4 @@
 package com.velu.MovieBookingApplication.service;
-
-
 import com.velu.MovieBookingApplication.Repository.UserRepository;
 import com.velu.MovieBookingApplication.dto.LoginRequestDto;
 import com.velu.MovieBookingApplication.dto.LoginResponseDTO;
@@ -11,9 +9,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 
 @Service

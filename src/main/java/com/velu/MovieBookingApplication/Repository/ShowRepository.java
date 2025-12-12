@@ -10,9 +10,9 @@ import java.util.Optional;
 
 @Repository
 public interface ShowRepository extends JpaRepository<Show,Long> {
-    Optional<List<Show>> findAllShowsByMovie(String movie);
-
-    Optional<List<Show>> findAllShowsByTheater(String theater);
+//    Optional<List<Show>> findAllShowsByMovie(String movie);
+//
+//    Optional<List<Show>> findAllShowsByTheater(String theater);
 
     Optional<List<Show>> findByMovieId(Long movieId);
 

@@ -1,6 +1,7 @@
 package com.velu.MovieBookingApplication.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -9,6 +10,7 @@ import java.util.List;
 
 @Entity
 @Data
+@Table(name = "shows")
 public class Show {
 
     @Id
@@ -18,6 +20,7 @@ public class Show {
     private Double price;
 
     @OneToMany(mappedBy = "show",fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<Booking> bookings;
 
     @ManyToOne(fetch = FetchType.EAGER)

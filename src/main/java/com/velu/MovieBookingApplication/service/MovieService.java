@@ -16,7 +16,7 @@ public class MovieService {
    public Movie addMovie(MovieDTO movieDTO){
          Movie movie = new Movie();
          movie.setName(movieDTO.getName());
-         movie.setDesc(movieDTO.getDesc());
+         movie.setDescription(movieDTO.getDescription());
          movie.setGenre(movieDTO.getGenre());
          movie.setRelease_date(movieDTO.getRelease_date());
          movie.setLanguage(movieDTO.getLanguage());
@@ -63,7 +63,7 @@ public class MovieService {
        Movie movie = movieRepository.findById(id).orElseThrow(() -> new RuntimeException("No Movie Found for the id" + " " + id));
 
        movie.setName(movieDTO.getName());
-       movie.setDesc(movieDTO.getDesc());
+       movie.setDescription(movieDTO.getDescription());
        movie.setGenre(movieDTO.getGenre());
        movie.setRelease_date(movieDTO.getRelease_date());
        movie.setDuration(movie.getDuration());
