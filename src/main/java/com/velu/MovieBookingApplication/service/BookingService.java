@@ -7,6 +7,7 @@ import com.velu.MovieBookingApplication.entity.Booking;
 import com.velu.MovieBookingApplication.entity.Show;
 import com.velu.MovieBookingApplication.entity.User;
 import com.velu.MovieBookingApplication.enums.BookingStatus;
+import com.velu.MovieBookingApplication.exception.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
@@ -23,16 +24,17 @@ public class BookingService {
     private ShowRepository showRepository;
     @Autowired
     private UserRepository userRepository;
+
     public Booking createBooking(BookingDto bookingDto) {
 
-           Show show = showRepository.findById(bookingDto.getShowId()).orElseThrow(() -> new RuntimeException("Show not found" + bookingDto.getShowId()));
+           Show show = showRepository.findById(bookingDto.getShowId()).orElseThrow(() -> new CustomException("Show not found" + bookingDto.getShowId()));
 
             if(!isSeatAvailable(bookingDto.getShowId(),bookingDto.getNumberOfSeats())){
-                throw  new RuntimeException("Not enough seat are available");
+                throw  new SeatsNotAvailableException("Not enough seat are available");
             }
 
             if(bookingDto.getSeatNumbers().size() != bookingDto.getNumberOfSeats()){
-                  throw new RuntimeException("Seat Numbers and Number of Seats must be equal");
+                  throw new InvalidSeatSelectionException("Seat Numbers and Number of Seats must be equal");
             }
 
             validateDuplicateSeats(show.getId(),bookingDto.getSeatNumbers());
@@ -57,7 +59,7 @@ public class BookingService {
 
 
     private void validateDuplicateSeats(Long id, List<String> seatNumbers) {
-        Show show = showRepository.findById(id).orElseThrow(() -> new RuntimeException("Show not found" + id));
+        Show show = showRepository.findById(id).orElseThrow(() -> new CustomException("Show not found" + id));
 
     Set<String> occupiedSeats  =    show.getBookings().stream()
                 .filter(booking -> booking.getBookingStatus() != BookingStatus.CANCELLED)
@@ -68,7 +70,7 @@ public class BookingService {
                               .filter(occupiedSeats::contains)
                               .collect(Collectors.toList());
     if(!duplicateSeats.isEmpty()){
-        throw new RuntimeException("Seats are already booked");
+        throw new DuplicateSeatException("Seats are already booked");
     }
 
     }
@@ -76,7 +78,7 @@ public class BookingService {
     private boolean isSeatAvailable(Long showId, Integer numberOfSeats) {
 
 
-        Show show = showRepository.findById(showId).orElseThrow(() -> new RuntimeException("Show not found" + showId));
+        Show show = showRepository.findById(showId).orElseThrow(() -> new CustomException("Show not found" + showId));
 
      int bookedSeats =  show.getBookings().stream()
                 .filter(booking -> booking.getBookingStatus() != BookingStatus.CANCELLED)
@@ -89,17 +91,14 @@ public class BookingService {
 
     public Booking updateBooking(Long id, BookingDto bookingDto) {
 
-        User user = userRepository.findById(bookingDto.getUserId()).orElseThrow(() -> new RuntimeException("User is not found for this id" + " " + bookingDto.getUserId()));
-        Show show = showRepository.findById(bookingDto.getShowId()).orElseThrow(() -> new RuntimeException("Show not found" + bookingDto.getShowId()));
-
-        Booking booking = new Booking();
-
+        User user = userRepository.findById(bookingDto.getUserId()).orElseThrow(() -> new CustomException("User is not found for this id" + " " + bookingDto.getUserId()));
+        Show show = showRepository.findById(bookingDto.getShowId()).orElseThrow(() -> new CustomException("Show not found" + bookingDto.getShowId()));
+         Booking booking = bookingRepository.findById(id).orElseThrow(() -> new CustomException("Booking is not available in this id" + " " + id));
         booking.setBookingDate(bookingDto.getBookingDate());
         booking.setShow(show);
         booking.setUser(user);
         booking.setSeatNumbers(bookingDto.getSeatNumbers());
         booking.setNumberOfSeats(bookingDto.getNumberOfSeats());
-        booking.setPrice(booking.getPrice());
 
         return bookingRepository.save(booking);
     }
@@ -115,10 +114,10 @@ public class BookingService {
     public Booking confirmBooking(Long id) {
 
        Booking booking =  bookingRepository.findById(id)
-                  .orElseThrow(() -> new RuntimeException("Booking not found"));
+                  .orElseThrow(() -> new CustomException("Booking not found"));
 
        if(booking.getBookingStatus() != BookingStatus.PENDING){
-            throw new RuntimeException("Booking is not pending state");
+            throw new InvalidBookingStateException("Booking is not pending state");
        }
 
        booking.setBookingStatus(BookingStatus.CONFIRMED);
@@ -129,7 +128,7 @@ public class BookingService {
     public Booking cancelBooking(Long id) {
 
         Booking booking =  bookingRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Booking not found"));
+                .orElseThrow(() -> new CustomException("Booking not found"));
 
         validateCancellation(booking);
 
@@ -145,18 +144,28 @@ public class BookingService {
 //         7:00 clock is the cancellation time
 
         if(LocalDateTime.now().isAfter(deadLineTime)){
-            throw new RuntimeException("Cannot cancel the booking");
+            throw new InvalidBookingCancellationException("Booking cancel can be done 2 hours before show begin");
         }
 
         if(booking.getBookingStatus() == BookingStatus.CANCELLED){
-            throw new RuntimeException("Booking Already been cancelled");
+            throw new InvalidBookingCancellationException("Booking Already been cancelled");
         }
     }
 
-    public List<Booking> getBookingbyStatus(BookingStatus bookingStatus) {
-         return  bookingRepository.findBookingByBookingStatus(bookingStatus);
+    public List<Booking> getBookingbyUseridandStatus(Long userId,BookingStatus status) {
+
+         return  bookingRepository.findByUserIdAndBookingStatus(userId,status);
     }
 
     public void deleteBooking(Long id) {
+        bookingRepository.deleteById(id);
+    }
+
+    public List<Booking> getAllBookings() {
+        return bookingRepository.findAll();
+    }
+
+    public List<Booking> getAllBookingsByStatus(BookingStatus status) {
+       return bookingRepository.findBookingsByBookingStatus(status);
     }
 }

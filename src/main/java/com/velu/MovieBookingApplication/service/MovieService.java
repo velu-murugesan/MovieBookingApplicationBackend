@@ -2,6 +2,7 @@ package com.velu.MovieBookingApplication.service;
 import com.velu.MovieBookingApplication.Repository.MovieRepository;
 import com.velu.MovieBookingApplication.dto.MovieDTO;
 import com.velu.MovieBookingApplication.entity.Movie;
+import com.velu.MovieBookingApplication.exception.CustomException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -35,7 +36,7 @@ public class MovieService {
        if(listOfMoviesBox.isPresent()){
             return listOfMoviesBox.get();
        }
-       else throw new RuntimeException("NO Movies are found for this Genre" + " " + genre);
+       else throw new CustomException("NO Movies are found for this Genre" + " " + genre);
     }
 
     public List<Movie> getAllMoviesByLanguage(String language) {
@@ -45,7 +46,7 @@ public class MovieService {
           return listOfMoviesBox.get();
       }
 
-      else throw new RuntimeException("No Movies are found for this Language" + " " + language);
+      else throw new CustomException("No Movies are found for this Language" + " " + language);
     }
 
 
@@ -55,19 +56,21 @@ public class MovieService {
         if(movieBox.isPresent()){
             return movieBox.get();
         }
-        throw new RuntimeException("No Movie found for this title" + " " + title);
+        throw new CustomException("No Movie found for this title" + " " + title);
     }
 
     public Movie updateMovie(Long id,MovieDTO movieDTO) {
 
        Movie movie = movieRepository.findById(id).orElseThrow(() -> new RuntimeException("No Movie Found for the id" + " " + id));
 
+        System.out.println(movieDTO.getDuration());
+
        movie.setName(movieDTO.getName());
        movie.setDescription(movieDTO.getDescription());
        movie.setGenre(movieDTO.getGenre());
        movie.setRelease_date(movieDTO.getRelease_date());
-       movie.setDuration(movie.getDuration());
-       movie.setLanguage(movie.getLanguage());
+       movie.setDuration(movieDTO.getDuration());
+       movie.setLanguage(movieDTO.getLanguage());
 
       return movieRepository.save(movie);
     }

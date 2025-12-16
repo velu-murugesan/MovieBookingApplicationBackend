@@ -2,6 +2,7 @@ package com.velu.MovieBookingApplication.service;
 import com.velu.MovieBookingApplication.Repository.TheaterRepository;
 import com.velu.MovieBookingApplication.dto.TheaterDTO;
 import com.velu.MovieBookingApplication.entity.Theater;
+import com.velu.MovieBookingApplication.exception.CustomException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,7 +27,7 @@ public class TheaterService {
     }
 
     public Theater updateTheater(Long id, TheaterDTO theaterDTO) {
-        Theater theater =  theaterRepository.findById(id).orElseThrow(() ->  new RuntimeException("No theater available for the id" + " " + id));
+        Theater theater =  theaterRepository.findById(id).orElseThrow(() ->  new CustomException("No theater available for the id" + " " + id));
 
         theater.setTheaterLocation(theaterDTO.getTheaterLocation());
         theater.setTheaterScreenType(theaterDTO.getTheaterScreenType());
@@ -42,7 +43,7 @@ public class TheaterService {
          if(listOfTheaterBox.isPresent()){
              return listOfTheaterBox.get();
          }
-         else throw new RuntimeException("Theater is not found for this location" + " " + location);
+         else throw new CustomException("Theater is not found for this location" + " " + location);
     }
 
     public void deleteTheater(Long id) {

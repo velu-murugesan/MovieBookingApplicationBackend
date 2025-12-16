@@ -4,6 +4,7 @@ import com.velu.MovieBookingApplication.dto.LoginRequestDto;
 import com.velu.MovieBookingApplication.dto.LoginResponseDTO;
 import com.velu.MovieBookingApplication.dto.RegisterRequestDTO;
 import com.velu.MovieBookingApplication.entity.User;
+import com.velu.MovieBookingApplication.exception.CustomException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -30,7 +31,7 @@ public class AuthenticationService {
     public User registerNormalUser(RegisterRequestDTO registerRequestDTO) {
 
         if(userRepository.findByUsername(registerRequestDTO.getUsername()).isPresent()){
-             throw new RuntimeException("User already registered");
+             throw new CustomException("User already registered");
         }
 
         Set<String> roles = new HashSet<>();
@@ -48,7 +49,7 @@ public class AuthenticationService {
     public User registerAdminUser(RegisterRequestDTO registerRequestDTO) {
 
         if(userRepository.findByUsername(registerRequestDTO.getUsername()).isPresent()){
-            throw new RuntimeException("User already registered");
+            throw new CustomException("User already registered");
         }
 
         Set<String> roles = new HashSet<>();
@@ -64,7 +65,7 @@ public class AuthenticationService {
     }
 
     public LoginResponseDTO login(LoginRequestDto loginRequestDto) {
-       User user =  userRepository.findByUsername(loginRequestDto.getUsername()).orElseThrow(() -> new RuntimeException("User not present"));
+       User user =  userRepository.findByUsername(loginRequestDto.getUsername()).orElseThrow(() -> new CustomException("User not present"));
 
 
 

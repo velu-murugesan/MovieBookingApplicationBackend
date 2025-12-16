@@ -1,6 +1,4 @@
 package com.velu.MovieBookingApplication.controller;
-
-
 import com.velu.MovieBookingApplication.dto.RegisterRequestDTO;
 import com.velu.MovieBookingApplication.entity.User;
 import com.velu.MovieBookingApplication.service.AuthenticationService;
@@ -20,7 +18,7 @@ public class AdminController {
     @Autowired
     private AuthenticationService authenticationService;
 
-    @PostMapping("/registeradminuser")
+    @PostMapping()
     public ResponseEntity<User> registerAdminUser(@RequestBody RegisterRequestDTO registerRequestDTO){
         return ResponseEntity.ok(authenticationService.registerAdminUser(registerRequestDTO));
     }

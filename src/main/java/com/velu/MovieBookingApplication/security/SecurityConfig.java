@@ -1,4 +1,6 @@
 package com.velu.MovieBookingApplication.security;
+import com.velu.MovieBookingApplication.exception.CustomAccessDeniedHandler;
+import com.velu.MovieBookingApplication.exception.CustomAuthenticationEntryPoint;
 import com.velu.MovieBookingApplication.jwt.JWTAuthenticationFilter;
 import com.velu.MovieBookingApplication.service.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +29,15 @@ public class SecurityConfig {
     @Autowired
     private JWTAuthenticationFilter jwtAuthenticationFilter;
 
+
+    private final CustomAccessDeniedHandler accessDeniedHandler;
+    private final CustomAuthenticationEntryPoint authenticationEntryPoint;
+
+    public SecurityConfig(CustomAccessDeniedHandler accessDeniedHandler,CustomAuthenticationEntryPoint authenticationEntryPoint){
+        this.accessDeniedHandler = accessDeniedHandler;
+        this.authenticationEntryPoint = authenticationEntryPoint;
+    }
+
    @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
@@ -35,7 +46,10 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth ->
                         auth.requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                                .requestMatchers("/api/bookings/**").hasRole("USER")
                                 .anyRequest().authenticated())
+                .exceptionHandling(ex -> ex.accessDeniedHandler(accessDeniedHandler)
+                        .authenticationEntryPoint(authenticationEntryPoint))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
