@@ -1,1 +1,2 @@
-web: java -jar target/MovieBookingApplication-0.0.1-SNAPSHOT.jar
+web: java -jar MovieBookingApplication-0.0.1-SNAPSHOT.jar
+
