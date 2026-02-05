@@ -1,10 +1,13 @@
-package com.velu.MovieBookingApplication.Utils;
+package com.velu.MovieBookingApplication.util;
 
 import com.velu.MovieBookingApplication.dto.*;
 import com.velu.MovieBookingApplication.entity.*;
 import org.springframework.data.domain.Page;
 
-public class GlobalDtos {
+import java.util.List;
+import java.util.function.Function;
+
+public class Utils {
 
     public static MovieDTO convertMovieToMovieDto(Movie movie){
 
@@ -49,9 +52,15 @@ public class GlobalDtos {
                 .build();
     }
 
-    public static PaginationMovieDto<MovieDTO> convertMovieToPaginationMovie(Page<Movie> movies){
-        return PaginationMovieDto.<MovieDTO>builder()
-                .content(movies.stream().map(GlobalDtos::convertMovieToMovieDto).toList())
+
+
+    public static<E,D> PaginationResponse<D> convertPageToPaginationResponse(
+            Page<E> movies,
+            Function<E,D> converter
+    ){
+        return PaginationResponse.<D>builder()
+
+                .content(movies.stream().map(converter).toList())
                 .last(movies.isLast())
                 .pageNumber(movies.getNumber())
                 .pageSize(movies.getSize())
@@ -59,5 +68,6 @@ public class GlobalDtos {
                 .totalPages(movies.getTotalPages())
                 .build();
     }
+
 
 }

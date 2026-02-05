@@ -1,20 +1,21 @@
 package com.velu.MovieBookingApplication.service;
-
-
 import com.velu.MovieBookingApplication.Repository.MovieRepository;
 import com.velu.MovieBookingApplication.Repository.ShowRepository;
 import com.velu.MovieBookingApplication.Repository.TheaterRepository;
+import com.velu.MovieBookingApplication.dto.PaginationResponse;
 import com.velu.MovieBookingApplication.dto.ShowDTO;
 import com.velu.MovieBookingApplication.entity.Booking;
 import com.velu.MovieBookingApplication.entity.Movie;
 import com.velu.MovieBookingApplication.entity.Show;
 import com.velu.MovieBookingApplication.entity.Theater;
 import com.velu.MovieBookingApplication.exception.CustomException;
+import com.velu.MovieBookingApplication.util.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
-import java.util.Optional;
+
 
 @Service
 public class ShowService {
@@ -43,28 +44,6 @@ public class ShowService {
        return showRepository.save(show);
     }
 
-    public List<Show> getAllShows() {
-       return  showRepository.findAll();
-    }
-
-    public List<Show> getAllShowsByMovie(Long movieId) {
-        Optional<List<Show>> listOfShowsBox =  showRepository.findByMovieId(movieId);
-
-        if(listOfShowsBox.isPresent()){
-            return listOfShowsBox.get();
-        }
-
-        else throw new CustomException("No more shows found for the movie id" + " " + movieId);
-    }
-
-    public List<Show> getAllShowsByTheater(Long theaterId) {
-        Optional<List<Show>> listOfShowsBox =  showRepository.findByTheaterId(theaterId);
-
-        if(listOfShowsBox.isPresent()){
-            return listOfShowsBox.get();
-        }
-        else throw new CustomException("NO more shows found for the theater id" + " " + theaterId);
-    }
 
     public Show updateShow(Long id, ShowDTO showDTO) {
 
@@ -96,6 +75,22 @@ public class ShowService {
         }
         else showRepository.deleteById(id);
 
+
+    }
+
+    public PaginationResponse<ShowDTO> getAllShows(PageRequest pageRequest, String movie, String theater) {
+
+        Page<Show> shows;
+
+        if(movie != null){
+          shows = showRepository.findAll(movie,pageRequest);
+        }else if(theater != null){
+          shows =  showRepository.findAll(pageRequest,theater);
+        }
+
+       shows = showRepository.findAll(pageRequest);
+
+        return Utils.convertPageToPaginationResponse(shows,Utils::convertShowToShowDTO);
 
     }
 }

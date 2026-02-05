@@ -1,13 +1,14 @@
 package com.velu.MovieBookingApplication.controller;
 import com.velu.MovieBookingApplication.dto.MovieDTO;
-import com.velu.MovieBookingApplication.entity.Movie;
+import com.velu.MovieBookingApplication.dto.PaginationResponse;
 import com.velu.MovieBookingApplication.service.MovieService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import javax.validation.Valid;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/movies")
@@ -18,40 +19,37 @@ public class MovieController {
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-     public ResponseEntity<Movie> addMovie(@RequestBody MovieDTO movieDTO){
+     public ResponseEntity<MovieDTO> addMovie(@Valid @RequestBody MovieDTO movieDTO){
            return ResponseEntity.ok(movieService.addMovie(movieDTO));
      }
 
-     @GetMapping("/getallmovies")
-    public ResponseEntity<List<Movie>> getAllMovies(){
-          return ResponseEntity.ok(movieService.getAllMovies());
+     @GetMapping()
+    public ResponseEntity<PaginationResponse<MovieDTO>> getAllMovies(
+            @Valid
+           @RequestParam(defaultValue = "0") Integer page,
+           @RequestParam(defaultValue = "10") Integer size,
+           @RequestParam(required = false) String language,
+           @RequestParam(required = false) String genre,
+           @RequestParam(required = false) String title
+     ){
+
+
+         PageRequest pageRequest = PageRequest.of(page,size);
+
+        return ResponseEntity.ok(movieService.getAllMovies(pageRequest,language,genre,title));
+
      }
 
 
-     @GetMapping("/getallmoviesbygenre")
-     public ResponseEntity<List<Movie>> getAllMoviesByGenre(@RequestParam String genre){
-           return ResponseEntity.ok(movieService.getAllMoviesByGenre(genre));
-     }
-
-    @GetMapping("/getallmoviesbylanguage")
-    public ResponseEntity<List<Movie>> getAllMoviesByLanguage(@RequestParam String language){
-        return ResponseEntity.ok(movieService.getAllMoviesByLanguage(language));
-    }
-
-    @GetMapping("/getmoviebytitle")
-    public ResponseEntity<Movie> getMovieByTitle(@RequestParam String title){
-        return ResponseEntity.ok(movieService.getMovieByTitle(title));
-    }
-
-    @PutMapping("/updatemovie/{id}")
+    @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Movie> updateMovie(@PathVariable Long id,@RequestBody MovieDTO movieDTO){
+    public ResponseEntity<MovieDTO> updateMovie(@Valid @PathVariable Long id,@RequestBody MovieDTO movieDTO){
          return ResponseEntity.ok(movieService.updateMovie(id,movieDTO));
     }
 
-    @DeleteMapping("/deletemovie/{id}")
+    @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> deleteMovie(@PathVariable Long id){
+    public ResponseEntity<Void> deleteMovie(@Valid @PathVariable Long id){
       movieService.deleteMovie(id);
       return ResponseEntity.ok().build();
     }

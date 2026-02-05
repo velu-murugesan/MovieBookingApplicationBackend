@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping("/api/admin")
 @PreAuthorize("hasRole('ADMIN')")
@@ -19,7 +21,7 @@ public class AdminController {
     private AuthenticationService authenticationService;
 
     @PostMapping()
-    public ResponseEntity<User> registerAdminUser(@RequestBody RegisterRequestDTO registerRequestDTO){
+    public ResponseEntity<User> registerAdminUser(@Valid @RequestBody RegisterRequestDTO registerRequestDTO){
         return ResponseEntity.ok(authenticationService.registerAdminUser(registerRequestDTO));
     }
 }

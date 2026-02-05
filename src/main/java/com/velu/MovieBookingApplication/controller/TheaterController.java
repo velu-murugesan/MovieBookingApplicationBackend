@@ -1,4 +1,5 @@
 package com.velu.MovieBookingApplication.controller;
+import com.velu.MovieBookingApplication.dto.PaginationResponse;
 import com.velu.MovieBookingApplication.dto.TheaterDTO;
 import com.velu.MovieBookingApplication.entity.Theater;
 import com.velu.MovieBookingApplication.service.TheaterService;
@@ -7,7 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import javax.validation.Valid;
+
 
 @RestController
 @RequestMapping("/api/theaters")
@@ -18,24 +20,29 @@ public class TheaterController {
 
     @PostMapping()
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Theater> addTheater(@RequestBody TheaterDTO theaterDTO){
+    public ResponseEntity<Theater> addTheater(@Valid @RequestBody TheaterDTO theaterDTO){
          return ResponseEntity.ok(theaterService.addTheater(theaterDTO));
     }
 
-    @PutMapping("/updatetheater/{id}")
+    @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Theater> updateTheater(@PathVariable Long id,@RequestBody TheaterDTO theaterDTO){
+    public ResponseEntity<Theater> updateTheater(@Valid @PathVariable Long id,@RequestBody TheaterDTO theaterDTO){
          return ResponseEntity.ok(theaterService.updateTheater(id,theaterDTO));
     }
 
-    @GetMapping("/gettheaterbylocation")
-    public ResponseEntity<List<Theater>> getTheaterByLocation(@RequestParam String location){
-        return  ResponseEntity.ok(theaterService.getTheaterByLocation(location));
+    @GetMapping()
+    public ResponseEntity<PaginationResponse<TheaterDTO>> getTheaterByLocation(
+            @Valid
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "10") Integer size,
+            @RequestParam String location
+    ){
+        return  ResponseEntity.ok(theaterService.getTheaterByLocation(page,size,location));
     }
 
     @PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping("/deletetheater/{id}")
-    public ResponseEntity<Void> deleteTheater(@PathVariable Long id){
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteTheater(@Valid @PathVariable Long id){
          theaterService.deleteTheater(id);
          return ResponseEntity.ok().build();
     }

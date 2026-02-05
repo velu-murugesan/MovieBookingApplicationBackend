@@ -16,13 +16,14 @@ public class Booking {
     private LocalDateTime bookingDate;
     private Double price;
     private BookingStatus bookingStatus;
+    private LocalDateTime createdAt;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "booking_seat_numbers")
     private List<String> seatNumbers;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_id" , nullable = false)
+    @JoinColumn(name = "user_id" , nullable = false )
     private User user;
 
     @ManyToOne(fetch = FetchType.EAGER)

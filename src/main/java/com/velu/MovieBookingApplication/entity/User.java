@@ -23,7 +23,7 @@ public class User implements UserDetails {
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> roles;
     private String email;
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL , orphanRemoval = true)
     @JsonIgnore
     List<Booking> bookingList;
 

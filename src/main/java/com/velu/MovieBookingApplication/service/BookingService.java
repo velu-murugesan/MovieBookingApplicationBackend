@@ -2,6 +2,8 @@ package com.velu.MovieBookingApplication.service;
 import com.velu.MovieBookingApplication.Repository.BookingRepository;
 import com.velu.MovieBookingApplication.Repository.ShowRepository;
 import com.velu.MovieBookingApplication.Repository.UserRepository;
+import com.velu.MovieBookingApplication.dto.PaginationResponse;
+import com.velu.MovieBookingApplication.util.Utils;
 import com.velu.MovieBookingApplication.dto.BookingDto;
 import com.velu.MovieBookingApplication.entity.Booking;
 import com.velu.MovieBookingApplication.entity.Show;
@@ -9,6 +11,9 @@ import com.velu.MovieBookingApplication.entity.User;
 import com.velu.MovieBookingApplication.enums.BookingStatus;
 import com.velu.MovieBookingApplication.exception.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -25,7 +30,7 @@ public class BookingService {
     @Autowired
     private UserRepository userRepository;
 
-    public Booking createBooking(BookingDto bookingDto) {
+    public BookingDto createBooking(BookingDto bookingDto) {
 
            Show show = showRepository.findById(bookingDto.getShowId()).orElseThrow(() -> new CustomException("Show not found" + bookingDto.getShowId()));
 
@@ -50,7 +55,7 @@ public class BookingService {
             booking.setSeatNumbers(bookingDto.getSeatNumbers());
             booking.setNumberOfSeats(bookingDto.getNumberOfSeats());
 
-            return bookingRepository.save(booking);
+            return Utils.convertBookingToBookingDTO(bookingRepository.save(booking));
     }
 
     private Double calculateTotalAmount(Double price, Integer numberOfSeats) {
@@ -89,7 +94,7 @@ public class BookingService {
 
     }
 
-    public Booking updateBooking(Long id, BookingDto bookingDto) {
+    public BookingDto updateBooking(Long id, BookingDto bookingDto) {
 
         User user = userRepository.findById(bookingDto.getUserId()).orElseThrow(() -> new CustomException("User is not found for this id" + " " + bookingDto.getUserId()));
         Show show = showRepository.findById(bookingDto.getShowId()).orElseThrow(() -> new CustomException("Show not found" + bookingDto.getShowId()));
@@ -100,15 +105,37 @@ public class BookingService {
         booking.setSeatNumbers(bookingDto.getSeatNumbers());
         booking.setNumberOfSeats(bookingDto.getNumberOfSeats());
 
-        return bookingRepository.save(booking);
+        return Utils.convertBookingToBookingDTO(bookingRepository.save(booking));
     }
 
-    public List<Booking> getUserBookings(Long id) {
-         return bookingRepository.findByUserId(id);
+    public PaginationResponse<BookingDto> getUserBookings(Integer page,Integer size,Long id) {
+        Sort sort = Sort.by(
+             Sort.Order.asc("show.showTime"),
+             Sort.Order.desc("createdAt")
+        );
+
+
+        PageRequest pageRequest = PageRequest.of(page,size,sort);
+
+        Page<Booking> bookings = bookingRepository.findAll(pageRequest,id);
+
+        return Utils.convertPageToPaginationResponse(bookings, Utils::convertBookingToBookingDTO);
     }
 
-    public List<Booking> getShowBookings(Long id) {
-        return bookingRepository.findByShowId(id);
+
+    public PaginationResponse<BookingDto> getShowBookings(Integer page, Integer size, Long id ) {
+
+        Sort sort = Sort.by(
+                Sort.Order.asc("show.showTime"),
+                Sort.Order.desc("createdAt")
+        );
+
+
+        PageRequest pageRequest = PageRequest.of(page,size,sort);
+
+        Page<Booking> bookings =  bookingRepository.findByShowId(id,pageRequest);
+
+        return  Utils.convertPageToPaginationResponse(bookings,Utils::convertBookingToBookingDTO);
     }
 
     public Booking confirmBooking(Long id) {
@@ -125,7 +152,7 @@ public class BookingService {
        return bookingRepository.save(booking);
     }
 
-    public Booking cancelBooking(Long id) {
+    public BookingDto cancelBooking(Long id) {
 
         Booking booking =  bookingRepository.findById(id)
                 .orElseThrow(() -> new CustomException("Booking not found"));
@@ -133,10 +160,10 @@ public class BookingService {
         validateCancellation(booking);
 
         booking.setBookingStatus(BookingStatus.CANCELLED);
-        return bookingRepository.save(booking);
+        return Utils.convertBookingToBookingDTO(bookingRepository.save(booking));
     }
 
-    public void validateCancellation(Booking booking){
+    private void validateCancellation(Booking booking){
         LocalDateTime showTime = booking.getShow().getShowTime();
         LocalDateTime deadLineTime =  showTime.minusHours(2);
 
@@ -152,20 +179,51 @@ public class BookingService {
         }
     }
 
-    public List<Booking> getBookingbyUseridandStatus(Long userId,BookingStatus status) {
+    public PaginationResponse<BookingDto> getBookingbyUseridandStatus(Integer offset,Integer pageSize,Long id,BookingStatus status) {
 
-         return  bookingRepository.findByUserIdAndBookingStatus(userId,status);
+        Sort sort = Sort.by(
+                Sort.Order.asc("show.showTime"),
+                Sort.Order.desc("createdAt")
+        );
+
+
+        PageRequest pageRequest = PageRequest.of(offset,pageSize,sort);
+
+        Page<Booking> bookings;
+
+        if(status == null){
+           bookings =  bookingRepository.findByUserId(id,pageRequest);
+        }
+
+        bookings =   bookingRepository.findByUserIdAndBookingStatus(id,pageRequest,status);
+       return Utils.convertPageToPaginationResponse(bookings,Utils::convertBookingToBookingDTO);
     }
 
     public void deleteBooking(Long id) {
         bookingRepository.deleteById(id);
     }
 
-    public List<Booking> getAllBookings() {
-        return bookingRepository.findAll();
+    public PaginationResponse<BookingDto> getAllBookings(Integer page, Integer size,  BookingStatus status) {
+
+        Sort sort = Sort.by(
+                Sort.Order.asc("show.showTime"),
+                Sort.Order.desc("createdAt")
+        );
+
+
+        PageRequest pageRequest = PageRequest.of(page,size,sort);
+
+        Page<Booking> bookings;
+
+        if(status != null){
+            bookings = bookingRepository.findBookingsByBookingStatus(pageRequest,status);
+        }
+
+       bookings =  bookingRepository.findAll(pageRequest);
+
+       return Utils.convertPageToPaginationResponse(bookings,Utils::convertBookingToBookingDTO);
+
     }
 
-    public List<Booking> getAllBookingsByStatus(BookingStatus status) {
-       return bookingRepository.findBookingsByBookingStatus(status);
-    }
+
 }

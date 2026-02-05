@@ -1,18 +1,22 @@
 package com.velu.MovieBookingApplication.Repository;
-
-
 import com.velu.MovieBookingApplication.entity.Movie;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-
+import java.awt.print.Pageable;
 import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface MovieRepository extends JpaRepository<Movie,Long> {
-   public Optional<List<Movie>> findByGenre(String genre);
+    Page<Movie> findByGenre(String genre,PageRequest pageRequest);
 
-    public Optional<List<Movie>> findByLanguage(String language);
+    Page<Movie> findByLanguage(String language,PageRequest pageRequest);
 
-    Optional<Movie> findByName(String title);
+    Page<Movie> findByName(PageRequest pageRequest ,String title);
+
+    Page<Movie> findAll(PageRequest pageRequest);
+
+
 }

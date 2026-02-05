@@ -11,8 +11,8 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PaginationMovieDto<M> {
-    private List<MovieDTO> content;
+public class PaginationResponse<D> {
+    private List<D> content;
     private int pageNumber;
     private int pageSize;
     private int totalElements;

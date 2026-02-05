@@ -14,7 +14,7 @@ import java.time.LocalDate;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(InvalidSeatSelectionException.class)
-    public ResponseEntity<ErrorResponse> customException(
+    public ResponseEntity<ErrorResponse> ourException(
             InvalidSeatSelectionException exception,
             HttpServletRequest request
     ){
@@ -31,8 +31,26 @@ public class GlobalExceptionHandler {
       return new ResponseEntity<>(error,HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<ErrorResponse> ourException(
+            BadRequestException exception,
+            HttpServletRequest request
+    ){
+
+
+        ErrorResponse error = new ErrorResponse(
+                LocalDate.now(),
+                HttpStatus.BAD_REQUEST.value(),
+                "Invalid user request , please check you inputs",
+                exception.getMessage(),
+                request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error,HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(SeatsNotAvailableException.class)
-    public ResponseEntity<ErrorResponse> customException(
+    public ResponseEntity<ErrorResponse> ourException(
             SeatsNotAvailableException exception,
             HttpServletRequest request
     ){
@@ -50,7 +68,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(DuplicateSeatException.class)
-    public ResponseEntity<ErrorResponse> customException(
+    public ResponseEntity<ErrorResponse> ourException(
             DuplicateSeatException exception,
             HttpServletRequest request
     ){
@@ -68,7 +86,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(InvalidBookingStateException.class)
-    public ResponseEntity<ErrorResponse> customException(
+    public ResponseEntity<ErrorResponse> ourException(
             InvalidBookingStateException exception,
             HttpServletRequest request
     ){
@@ -84,38 +102,58 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error,HttpStatus.CONFLICT);
     }
 
-    @ExceptionHandler(CustomException.class)
-    public ResponseEntity<ErrorResponse> customException(
-            CustomException exception,
+
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ErrorResponse> ourException(
+            ResourceNotFoundException exception,
             HttpServletRequest request
     ){
 
         ErrorResponse error = new ErrorResponse(
                 LocalDate.now(),
-                HttpStatus.BAD_REQUEST.value(),
-                "REQUEST_IS_NOT_SATISFIED",
+                HttpStatus.NOT_FOUND.value(),
+                "RESOURCE_IS_NOT_FOUND",
                 exception.getMessage(),
                 request.getRequestURI()
         );
 
-        return new ResponseEntity<>(error,HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(error,HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(InvalidBookingCancellationException.class)
-    public ResponseEntity<ErrorResponse> customException(
+    public ResponseEntity<ErrorResponse> ourException(
             InvalidBookingCancellationException exception,
             HttpServletRequest request
     ){
 
         ErrorResponse error = new ErrorResponse(
                 LocalDate.now(),
-                HttpStatus.CONTINUE.value(),
+                HttpStatus.CONFLICT.value(),
                 "BOOKING_CAN'T_BE_CANCEL",
                 exception.getMessage(),
                 request.getRequestURI()
         );
 
         return new ResponseEntity<>(error,HttpStatus.CONFLICT);
+    }
+
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> ourException(
+           Exception exception,
+            HttpServletRequest request
+    ){
+
+        ErrorResponse error = new ErrorResponse(
+                LocalDate.now(),
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "Internal Server Error , Please wait for a minute",
+                exception.getMessage(),
+                request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error,HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
 }
