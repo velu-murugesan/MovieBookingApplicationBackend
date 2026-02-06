@@ -69,7 +69,7 @@
 			<artifactId>spring-security-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-        <!-- https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt-api -->
+
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-api</artifactId>
@@ -87,18 +87,18 @@
             <version>0.13.0</version>
             <scope>runtime</scope>
         </dependency>
-        <!-- Source: https://mvnrepository.com/artifact/javax.validation/validation-api -->
+
         <dependency>
             <groupId>javax.validation</groupId>
             <artifactId>validation-api</artifactId>
             <version>2.0.1.Final</version>
             <scope>compile</scope>
         </dependency>
-        <!-- Source: https://mvnrepository.com/artifact/org.redisson/redisson -->
+
         <dependency>
-            <groupId>org.redisson</groupId>
-            <artifactId>redisson</artifactId>
-            <version>4.1.0</version>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-redis</artifactId>
+            <version>4.0.2</version>
         </dependency>
         <!-- Source: https://mvnrepository.com/artifact/com.github.vladimir-bukhtoyarov/bucket4j-core -->
         <dependency>
@@ -106,7 +106,7 @@
             <artifactId>bucket4j-core</artifactId>
             <version>8.0.1</version>
         </dependency>
-	</dependencies>
+    </dependencies>
 
 	<build>
 		<plugins>

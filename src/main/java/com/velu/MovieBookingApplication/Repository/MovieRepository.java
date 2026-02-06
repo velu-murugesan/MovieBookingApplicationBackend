@@ -18,5 +18,6 @@ public interface MovieRepository extends JpaRepository<Movie,Long> {
 
     Page<Movie> findAll(PageRequest pageRequest);
 
+    boolean isExistsById(Long id);
 
 }

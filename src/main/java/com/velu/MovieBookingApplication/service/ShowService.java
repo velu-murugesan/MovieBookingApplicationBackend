@@ -8,7 +8,8 @@ import com.velu.MovieBookingApplication.entity.Booking;
 import com.velu.MovieBookingApplication.entity.Movie;
 import com.velu.MovieBookingApplication.entity.Show;
 import com.velu.MovieBookingApplication.entity.Theater;
-import com.velu.MovieBookingApplication.exception.CustomException;
+import com.velu.MovieBookingApplication.exception.DeleteShowConflictException;
+import com.velu.MovieBookingApplication.exception.ResourceNotFoundException;
 import com.velu.MovieBookingApplication.util.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -31,9 +32,9 @@ public class ShowService {
 
     public Show createShow(ShowDTO showDTO) {
 
-        Movie movie = movieRepository.findById(showDTO.getMovie_id()).orElseThrow(() -> new CustomException("No movie found for this id" + " " + showDTO.getMovie_id()));
+        Movie movie = movieRepository.findById(showDTO.getMovie_id()).orElseThrow(() -> new ResourceNotFoundException("No movie found for this id" + " " + showDTO.getMovie_id()));
 
-        Theater theater = theaterRepository.findById(showDTO.getTheater_id()).orElseThrow(() -> new CustomException("No theater found for this id" + " " + showDTO.getTheater_id()));
+        Theater theater = theaterRepository.findById(showDTO.getTheater_id()).orElseThrow(() -> new ResourceNotFoundException("No theater found for this id" + " " + showDTO.getTheater_id()));
 
         Show show = new Show();
         show.setPrice(showDTO.getPrice());
@@ -47,11 +48,11 @@ public class ShowService {
 
     public Show updateShow(Long id, ShowDTO showDTO) {
 
-       Show show =  showRepository.findById(id).orElseThrow(() -> new CustomException("No Movie found for this id" + " " + id));
+       Show show =  showRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("No Movie found for this id" + " " + id));
 
-        Movie movie = movieRepository.findById(showDTO.getMovie_id()).orElseThrow(() -> new CustomException("No movie found for this id" + " " + showDTO.getMovie_id()));
+        Movie movie = movieRepository.findById(showDTO.getMovie_id()).orElseThrow(() -> new ResourceNotFoundException("No movie found for this id" + " " + showDTO.getMovie_id()));
 
-        Theater theater = theaterRepository.findById(showDTO.getTheater_id()).orElseThrow(() -> new CustomException("No theater found for this id" + " " + showDTO.getTheater_id()));
+        Theater theater = theaterRepository.findById(showDTO.getTheater_id()).orElseThrow(() -> new ResourceNotFoundException("No theater found for this id" + " " + showDTO.getTheater_id()));
 
 
         show.setShowTime(showDTO.getShowTime());
@@ -64,14 +65,14 @@ public class ShowService {
     public void deleteShow(Long id) {
 
         if(!showRepository.existsById(id)){
-             throw new CustomException("No show available for the id" + " " + id);
+             throw new ResourceNotFoundException("No show available for the id" + " " + id);
         }
 
        List<Booking> bookings =  showRepository.findById(id).get().getBookings();
 
 
         if(!bookings.isEmpty()){
-            throw new CustomException("Can't delete show with existing bookings");
+            throw new DeleteShowConflictException("Can't delete show with existing bookings");
         }
         else showRepository.deleteById(id);
 

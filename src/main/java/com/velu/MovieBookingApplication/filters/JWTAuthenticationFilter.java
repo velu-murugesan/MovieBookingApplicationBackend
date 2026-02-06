@@ -1,6 +1,4 @@
-package com.velu.MovieBookingApplication.jwt;
-
-
+package com.velu.MovieBookingApplication.filters;
 import com.velu.MovieBookingApplication.Repository.UserRepository;
 import com.velu.MovieBookingApplication.service.JwtService;
 import jakarta.servlet.FilterChain;
@@ -63,8 +61,6 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
                SecurityContextHolder.getContext().setAuthentication(authToken);
 
            }
-
-
 
        }
 

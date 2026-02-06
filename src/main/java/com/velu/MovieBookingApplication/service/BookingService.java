@@ -32,7 +32,7 @@ public class BookingService {
 
     public BookingDto createBooking(BookingDto bookingDto) {
 
-           Show show = showRepository.findById(bookingDto.getShowId()).orElseThrow(() -> new CustomException("Show not found" + bookingDto.getShowId()));
+           Show show = showRepository.findById(bookingDto.getShowId()).orElseThrow(() -> new ResourceNotFoundException("Show not found" + bookingDto.getShowId()));
 
             if(!isSeatAvailable(bookingDto.getShowId(),bookingDto.getNumberOfSeats())){
                 throw  new SeatsNotAvailableException("Not enough seat are available");
@@ -64,7 +64,7 @@ public class BookingService {
 
 
     private void validateDuplicateSeats(Long id, List<String> seatNumbers) {
-        Show show = showRepository.findById(id).orElseThrow(() -> new CustomException("Show not found" + id));
+        Show show = showRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Show not found" + id));
 
     Set<String> occupiedSeats  =    show.getBookings().stream()
                 .filter(booking -> booking.getBookingStatus() != BookingStatus.CANCELLED)
@@ -83,7 +83,7 @@ public class BookingService {
     private boolean isSeatAvailable(Long showId, Integer numberOfSeats) {
 
 
-        Show show = showRepository.findById(showId).orElseThrow(() -> new CustomException("Show not found" + showId));
+        Show show = showRepository.findById(showId).orElseThrow(() -> new ResourceNotFoundException("Show not found" + showId));
 
      int bookedSeats =  show.getBookings().stream()
                 .filter(booking -> booking.getBookingStatus() != BookingStatus.CANCELLED)
@@ -96,9 +96,9 @@ public class BookingService {
 
     public BookingDto updateBooking(Long id, BookingDto bookingDto) {
 
-        User user = userRepository.findById(bookingDto.getUserId()).orElseThrow(() -> new CustomException("User is not found for this id" + " " + bookingDto.getUserId()));
-        Show show = showRepository.findById(bookingDto.getShowId()).orElseThrow(() -> new CustomException("Show not found" + bookingDto.getShowId()));
-         Booking booking = bookingRepository.findById(id).orElseThrow(() -> new CustomException("Booking is not available in this id" + " " + id));
+        User user = userRepository.findById(bookingDto.getUserId()).orElseThrow(() -> new ResourceNotFoundException("User is not found for this id" + " " + bookingDto.getUserId()));
+        Show show = showRepository.findById(bookingDto.getShowId()).orElseThrow(() -> new ResourceNotFoundException("Show not found" + bookingDto.getShowId()));
+         Booking booking = bookingRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Booking is not found for this id" + " " + id));
         booking.setBookingDate(bookingDto.getBookingDate());
         booking.setShow(show);
         booking.setUser(user);
@@ -141,7 +141,7 @@ public class BookingService {
     public Booking confirmBooking(Long id) {
 
        Booking booking =  bookingRepository.findById(id)
-                  .orElseThrow(() -> new CustomException("Booking not found"));
+                  .orElseThrow(() -> new ResourceNotFoundException("Booking not found"));
 
        if(booking.getBookingStatus() != BookingStatus.PENDING){
             throw new InvalidBookingStateException("Booking is not pending state");
@@ -155,7 +155,7 @@ public class BookingService {
     public BookingDto cancelBooking(Long id) {
 
         Booking booking =  bookingRepository.findById(id)
-                .orElseThrow(() -> new CustomException("Booking not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Booking not found"));
 
         validateCancellation(booking);
 
@@ -200,6 +200,7 @@ public class BookingService {
     }
 
     public void deleteBooking(Long id) {
+
         bookingRepository.deleteById(id);
     }
 

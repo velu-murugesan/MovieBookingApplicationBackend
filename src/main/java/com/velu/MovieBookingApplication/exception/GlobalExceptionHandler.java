@@ -28,8 +28,69 @@ public class GlobalExceptionHandler {
               request.getRequestURI()
       );
 
+
       return new ResponseEntity<>(error,HttpStatus.BAD_REQUEST);
     }
+
+
+
+    @ExceptionHandler(UserAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponse> ourException(
+           UserAlreadyExistsException exception,
+            HttpServletRequest request
+    ){
+
+
+        ErrorResponse error = new ErrorResponse(
+                LocalDate.now(),
+                HttpStatus.CONFLICT.value(),
+                "USER_ALREADY_EXISTS",
+                exception.getMessage(),
+                request.getRequestURI()
+        );
+
+
+        return new ResponseEntity<>(error,HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(DeleteShowConflictException.class)
+    public ResponseEntity<ErrorResponse> ourException(
+            DeleteShowConflictException exception,
+            HttpServletRequest request
+    ){
+
+
+        ErrorResponse error = new ErrorResponse(
+                LocalDate.now(),
+                HttpStatus.CONFLICT.value(),
+                "CONFLICT WHILE DELETING SHOW",
+                exception.getMessage(),
+                request.getRequestURI()
+        );
+
+
+        return new ResponseEntity<>(error,HttpStatus.CONFLICT);
+    }
+
+
+    @ExceptionHandler(RateLimitExceededException.class)
+    public ResponseEntity<ErrorResponse> ourException(
+            RateLimitExceededException exception,
+            HttpServletRequest request
+    ){
+
+
+        ErrorResponse error = new ErrorResponse(
+                LocalDate.now(),
+                HttpStatus.TOO_MANY_REQUESTS.value(),
+                "Too Many Request",
+                exception.getMessage(),
+                request.getRequestURI()
+        );
+
+        return new ResponseEntity<>(error,HttpStatus.TOO_MANY_REQUESTS);
+    }
+
 
     @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<ErrorResponse> ourException(

@@ -1,7 +1,7 @@
 package com.velu.MovieBookingApplication.security;
 import com.velu.MovieBookingApplication.exception.CustomAccessDeniedHandler;
 import com.velu.MovieBookingApplication.exception.CustomAuthenticationEntryPoint;
-import com.velu.MovieBookingApplication.jwt.JWTAuthenticationFilter;
+import com.velu.MovieBookingApplication.filters.JWTAuthenticationFilter;
 import com.velu.MovieBookingApplication.service.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;

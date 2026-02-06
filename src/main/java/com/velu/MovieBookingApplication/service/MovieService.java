@@ -1,6 +1,7 @@
 package com.velu.MovieBookingApplication.service;
 import com.velu.MovieBookingApplication.Repository.MovieRepository;
 import com.velu.MovieBookingApplication.dto.PaginationResponse;
+import com.velu.MovieBookingApplication.exception.ResourceNotFoundException;
 import com.velu.MovieBookingApplication.util.Utils;
 import com.velu.MovieBookingApplication.dto.MovieDTO;
 import com.velu.MovieBookingApplication.entity.Movie;
@@ -32,7 +33,7 @@ public class MovieService {
 
     public MovieDTO updateMovie(Long id,MovieDTO movieDTO) {
 
-       Movie movie = movieRepository.findById(id).orElseThrow(() -> new RuntimeException("No Movie Found for the id" + " " + id));
+       Movie movie = movieRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("No Movie Found for the id" + " " + id));
 
         System.out.println(movieDTO.getDuration());
 
@@ -47,6 +48,10 @@ public class MovieService {
     }
 
     public void deleteMovie(Long id) {
+
+       if(!movieRepository.isExistsById(id)){
+           throw  new ResourceNotFoundException("No Movie found for this id");
+       }
       movieRepository.deleteById(id);
     }
 
