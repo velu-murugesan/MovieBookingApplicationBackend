@@ -8,7 +8,7 @@ import java.util.List;
 
 @Data
 @Builder
-public class BookingDto {
+public class BookingDTO {
 
     @Min(value = 1,message = "At least 1 seat must be selected")
     private Integer numberOfSeats;

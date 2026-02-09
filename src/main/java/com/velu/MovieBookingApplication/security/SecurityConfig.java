@@ -2,7 +2,9 @@ package com.velu.MovieBookingApplication.security;
 import com.velu.MovieBookingApplication.exception.CustomAccessDeniedHandler;
 import com.velu.MovieBookingApplication.exception.CustomAuthenticationEntryPoint;
 import com.velu.MovieBookingApplication.filters.JWTAuthenticationFilter;
+import com.velu.MovieBookingApplication.filters.RateLimitFilter;
 import com.velu.MovieBookingApplication.service.CustomUserDetailsService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,6 +21,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.context.SecurityContextHolderFilter;
+import org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -32,10 +36,12 @@ public class SecurityConfig {
 
     private final CustomAccessDeniedHandler accessDeniedHandler;
     private final CustomAuthenticationEntryPoint authenticationEntryPoint;
+    private final RateLimitFilter rateLimitFilter;
 
-    public SecurityConfig(CustomAccessDeniedHandler accessDeniedHandler,CustomAuthenticationEntryPoint authenticationEntryPoint){
+    public SecurityConfig(CustomAccessDeniedHandler accessDeniedHandler, CustomAuthenticationEntryPoint authenticationEntryPoint, RateLimitFilter rateLimitFilter){
         this.accessDeniedHandler = accessDeniedHandler;
         this.authenticationEntryPoint = authenticationEntryPoint;
+        this.rateLimitFilter = rateLimitFilter;
     }
 
    @Bean
@@ -52,6 +58,7 @@ public class SecurityConfig {
                         .authenticationEntryPoint(authenticationEntryPoint))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())
+                .addFilterBefore(rateLimitFilter, WebAsyncManagerIntegrationFilter.class)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }

@@ -6,17 +6,21 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.server.ResponseStatusException;
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
+@Order(1)
 public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
     @Autowired
@@ -47,7 +51,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
        if(username != null && SecurityContextHolder.getContext().getAuthentication() == null){
 
            var userdetails = userRepository.findByUsername(username)
-                   .orElseThrow(() -> new RuntimeException("user not found"));
+                   .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"user not found"));
 
            if(jwtService.isTokenValid(jwtToken,userdetails)){
                List<SimpleGrantedAuthority> authorities = userdetails.getRoles().stream()

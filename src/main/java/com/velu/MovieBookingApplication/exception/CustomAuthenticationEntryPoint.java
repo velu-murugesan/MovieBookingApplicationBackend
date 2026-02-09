@@ -1,5 +1,4 @@
 package com.velu.MovieBookingApplication.exception;
-
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -12,7 +11,7 @@ import java.io.IOException;
 @Component
 public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
     @Override
-    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
+    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException{
 
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
         response.setContentType("application/json");
@@ -23,7 +22,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
                         
                         "status":401,
                         "error":"UNAUTHORIZED",
-                        "message":"Authentication required",
+                        "message":"Invalid username or password",
                         "path":"%s"
                         
                         }

@@ -1,6 +1,4 @@
 package com.velu.MovieBookingApplication.Repository;
-
-
 import com.velu.MovieBookingApplication.entity.Booking;
 import com.velu.MovieBookingApplication.enums.BookingStatus;
 import org.springframework.data.domain.Page;
@@ -11,7 +9,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface BookingRepository extends JpaRepository<Booking,Long> {
-    Page<Booking> findByUserId(Long id,PageRequest pageRequest);
+    Page<Booking> findByUserId(PageRequest pageRequest,Long id);
 
     Page<Booking> findByShowId(Long id,PageRequest pageRequest);
 
@@ -21,7 +19,5 @@ public interface BookingRepository extends JpaRepository<Booking,Long> {
 
     Page<Booking> findByUserIdAndBookingStatus(Long id,PageRequest pageRequest,BookingStatus bookingStatus);
 
-    Page<Booking> findAll(PageRequest pageRequest);
 
-    Page<Booking> findAll(PageRequest pageRequest, Long id);
 }

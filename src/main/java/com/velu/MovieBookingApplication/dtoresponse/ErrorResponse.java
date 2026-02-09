@@ -1,10 +1,8 @@
-package com.velu.MovieBookingApplication.dto;
-
+package com.velu.MovieBookingApplication.dtoresponse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import java.time.LocalDate;
 
 @Data

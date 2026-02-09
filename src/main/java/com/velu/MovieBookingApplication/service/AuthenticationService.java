@@ -1,16 +1,19 @@
 package com.velu.MovieBookingApplication.service;
 import com.velu.MovieBookingApplication.Repository.UserRepository;
 import com.velu.MovieBookingApplication.dto.LoginRequestDto;
-import com.velu.MovieBookingApplication.dto.LoginResponseDTO;
 import com.velu.MovieBookingApplication.dto.RegisterRequestDTO;
+import com.velu.MovieBookingApplication.dtoresponse.LoginResponse;
+import com.velu.MovieBookingApplication.dtoresponse.UserRegisterResponseDto;
 import com.velu.MovieBookingApplication.entity.User;
-import com.velu.MovieBookingApplication.exception.ResourceNotFoundException;
-import com.velu.MovieBookingApplication.exception.UserAlreadyExistsException;
+import com.velu.MovieBookingApplication.util.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -29,10 +32,10 @@ public class AuthenticationService {
     @Autowired
     private JwtService jwtService;
 
-    public User registerNormalUser(RegisterRequestDTO registerRequestDTO) {
+    public UserRegisterResponseDto registerNormalUser(RegisterRequestDTO registerRequestDTO) {
 
         if(userRepository.findByUsername(registerRequestDTO.getUsername()).isPresent()){
-             throw new UserAlreadyExistsException("User already registered");
+             throw new ResponseStatusException(HttpStatus.CONFLICT,"User already registered");
         }
 
         Set<String> roles = new HashSet<>();
@@ -44,13 +47,13 @@ public class AuthenticationService {
         user.setPassword(passwordEncoder.encode(registerRequestDTO.getPassword()));
         user.setRoles(roles);
 
-        return userRepository.save(user);
+        return Utils.convertUserToUserResponse(userRepository.save(user));
     }
 
-    public User registerAdminUser(RegisterRequestDTO registerRequestDTO) {
+    public UserRegisterResponseDto registerAdminUser(RegisterRequestDTO registerRequestDTO) {
 
         if(userRepository.findByUsername(registerRequestDTO.getUsername()).isPresent()){
-            throw new UserAlreadyExistsException("User already registered");
+            throw new ResponseStatusException(HttpStatus.CONFLICT,"User already registered");
         }
 
         Set<String> roles = new HashSet<>();
@@ -62,11 +65,11 @@ public class AuthenticationService {
         user.setPassword(passwordEncoder.encode(registerRequestDTO.getPassword()));
         user.setRoles(roles);
 
-        return userRepository.save(user);
+        return Utils.convertUserToUserResponse(userRepository.save(user));
     }
 
-    public LoginResponseDTO login(LoginRequestDto loginRequestDto) {
-       User user =  userRepository.findByUsername(loginRequestDto.getUsername()).orElseThrow(() -> new ResourceNotFoundException("User is not Exist"));
+    public LoginResponse login(LoginRequestDto loginRequestDto) {
+       User user =  userRepository.findByUsername(loginRequestDto.getUsername()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User is not Exist"));
 
 
 
@@ -80,7 +83,7 @@ public class AuthenticationService {
 
        String token = jwtService.generateToken(user);
 
-       return LoginResponseDTO.builder()
+       return LoginResponse.builder()
                .jwtToken(token)
                .username(user.getUsername())
                .roles(user.getRoles())

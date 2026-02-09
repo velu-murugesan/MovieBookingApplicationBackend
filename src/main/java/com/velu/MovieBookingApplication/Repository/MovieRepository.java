@@ -4,20 +4,18 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import java.awt.print.Pageable;
-import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface MovieRepository extends JpaRepository<Movie,Long> {
-    Page<Movie> findByGenre(String genre,PageRequest pageRequest);
+    Page<Movie> findMoviesByGenre(String genre,PageRequest pageRequest);
 
-    Page<Movie> findByLanguage(String language,PageRequest pageRequest);
+    Page<Movie> findMoviesByLanguage(String language,PageRequest pageRequest);
 
-    Page<Movie> findByName(PageRequest pageRequest ,String title);
+    Page<Movie> findMoviesByName(PageRequest pageRequest ,String title);
 
-    Page<Movie> findAll(PageRequest pageRequest);
+    Page<Movie> findMoviesByLanguageAndGenre(PageRequest pageRequest,String language,String genre);
 
-    boolean isExistsById(Long id);
+    Page<Movie> findMoviesByNameAndGenre(PageRequest pageRequest, String title, String genre);
 
+    Page<Movie> findMoviesByLanguageAndName(PageRequest pageRequest, String language, String title);
 }

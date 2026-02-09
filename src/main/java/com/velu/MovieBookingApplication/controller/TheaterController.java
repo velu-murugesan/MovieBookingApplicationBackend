@@ -1,13 +1,13 @@
 package com.velu.MovieBookingApplication.controller;
-import com.velu.MovieBookingApplication.dto.PaginationResponse;
+import com.velu.MovieBookingApplication.dtoresponse.PaginationResponse;
 import com.velu.MovieBookingApplication.dto.TheaterDTO;
 import com.velu.MovieBookingApplication.entity.Theater;
 import com.velu.MovieBookingApplication.service.TheaterService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
 import javax.validation.Valid;
 
 
@@ -21,7 +21,7 @@ public class TheaterController {
     @PostMapping()
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Theater> addTheater(@Valid @RequestBody TheaterDTO theaterDTO){
-         return ResponseEntity.ok(theaterService.addTheater(theaterDTO));
+         return new ResponseEntity<Theater>(theaterService.addTheater(theaterDTO), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
@@ -31,7 +31,7 @@ public class TheaterController {
     }
 
     @GetMapping()
-    public ResponseEntity<PaginationResponse<TheaterDTO>> getTheaterByLocation(
+    public ResponseEntity<PaginationResponse<Theater>> getTheaterByLocation(
             @Valid
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "10") Integer size,
@@ -42,9 +42,9 @@ public class TheaterController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTheater(@Valid @PathVariable Long id){
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    public void deleteTheater(@Valid @PathVariable Long id){
          theaterService.deleteTheater(id);
-         return ResponseEntity.ok().build();
     }
 
 }

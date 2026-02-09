@@ -1,14 +1,14 @@
 package com.velu.MovieBookingApplication.controller;
-import com.velu.MovieBookingApplication.dto.BookingDto;
-import com.velu.MovieBookingApplication.dto.PaginationResponse;
+import com.velu.MovieBookingApplication.dto.BookingDTO;
+import com.velu.MovieBookingApplication.dtoresponse.PaginationResponse;
 import com.velu.MovieBookingApplication.entity.Booking;
 import com.velu.MovieBookingApplication.enums.BookingStatus;
 import com.velu.MovieBookingApplication.service.BookingService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/bookings")
@@ -20,17 +20,17 @@ public class BookingController {
 //     we just create booking for show
 
      @PostMapping()
-     public ResponseEntity<BookingDto> createBooking(@Valid @RequestBody BookingDto bookingDto){
-          return ResponseEntity.ok(bookingService.createBooking(bookingDto));
+     public ResponseEntity<Booking> createBooking(@Valid @RequestBody BookingDTO bookingDto){
+          return new ResponseEntity<Booking>(bookingService.createBooking(bookingDto), HttpStatus.CREATED);
      }
 
      @PutMapping("/{id}")
-     public ResponseEntity<BookingDto> updateBooking(@Valid @PathVariable Long id,@RequestBody BookingDto bookingDto){
+     public ResponseEntity<Booking> updateBooking(@Valid @PathVariable Long id, @RequestBody BookingDTO bookingDto){
             return ResponseEntity.ok(bookingService.updateBooking(id,bookingDto));
      }
 
      @GetMapping("/{id}/users")
-    public ResponseEntity<PaginationResponse<BookingDto>> getUserBookings(
+    public ResponseEntity<PaginationResponse<Booking>> getUserBookings(
             @Valid
             @PathVariable Long id,
             @RequestParam(defaultValue = "0") Integer page,
@@ -51,7 +51,7 @@ public class BookingController {
     }
 
     @PutMapping("/{id}/cancel")
-    public ResponseEntity<BookingDto> cancelBooking(@Valid @PathVariable Long id){
+    public ResponseEntity<Booking> cancelBooking(@Valid @PathVariable Long id){
         return ResponseEntity.ok(bookingService.cancelBooking(id));
     }
 

@@ -7,6 +7,12 @@ import java.util.List;
 
 @Entity
 @Data
+@Table(
+        name = "bookings",
+        indexes = {
+                @Index(name = "idx_booking_user_id",columnList = "user_id")
+        }
+)
 public class Booking {
 
     @Id
@@ -19,7 +25,8 @@ public class Booking {
     private LocalDateTime createdAt;
 
     @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "booking_seat_numbers")
+    @CollectionTable(name = "booking_seat_numbers" , joinColumns = @JoinColumn(name ="booking_id"))
+    @Column(name = "seat_number")
     private List<String> seatNumbers;
 
     @ManyToOne(fetch = FetchType.EAGER)
