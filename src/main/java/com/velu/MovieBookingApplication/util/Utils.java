@@ -1,12 +1,9 @@
 package com.velu.MovieBookingApplication.util;
-import com.velu.MovieBookingApplication.dtoresponse.LoginResponse;
 import com.velu.MovieBookingApplication.dtoresponse.PaginationResponse;
 import com.velu.MovieBookingApplication.dtoresponse.UserRegisterResponseDto;
 import com.velu.MovieBookingApplication.entity.User;
 import org.springframework.data.domain.Page;
-import java.util.function.Function;
 
-import static io.jsonwebtoken.Jwts.builder;
 
 
 public class Utils {

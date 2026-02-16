@@ -36,8 +36,9 @@ public class MovieController {
            @RequestParam(required = false) String title
      ){
 
-
-         PageRequest pageRequest = PageRequest.of(page,size);
+         int maxPageSize = 20;
+         int pageSize =  Math.min(maxPageSize,Math.abs(size));
+         PageRequest pageRequest = PageRequest.of(page,pageSize);
 
         return ResponseEntity.ok(movieService.getAllMovies(pageRequest,language,genre,title));
 

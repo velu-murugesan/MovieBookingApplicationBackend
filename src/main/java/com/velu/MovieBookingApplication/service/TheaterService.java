@@ -42,7 +42,12 @@ public class TheaterService {
 
     public PaginationResponse<Theater> getTheaterByLocation(Integer page, Integer size, String location) {
 
-        Sort sort = Sort.by(Sort.Order.asc("theaterName"));
+//         -128 to 127 will be store inside integer constant pool
+
+                    int maxPageSize = 20;
+                    int pageSize =  Math.min(maxPageSize,Math.abs(size));
+
+        Sort sort = Sort.by(Sort.Order.asc("id"));
 
         if(location == null || location.isBlank()){
              throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Location is empty , please give the location");
@@ -52,7 +57,7 @@ public class TheaterService {
           throw new ResponseStatusException(HttpStatus.NOT_FOUND,"location is not exist" + location);
         }
 
-        PageRequest pageRequest = PageRequest.of(page,size,sort);
+        PageRequest pageRequest = PageRequest.of(page,pageSize,sort);
 
        Page<Theater> theaters = theaterRepository.findByTheaterLocation(pageRequest,location);
 

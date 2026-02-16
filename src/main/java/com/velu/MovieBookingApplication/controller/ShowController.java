@@ -33,7 +33,9 @@ public class ShowController {
             @RequestParam(required = false) String movie,
             @RequestParam(required = false) String theater
     ){
-        PageRequest pageRequest = PageRequest.of(page,size);
+        int maxPageSize = 20;
+        int pageSize =  Math.min(maxPageSize,Math.abs(size));
+        PageRequest pageRequest = PageRequest.of(page,pageSize);
 
        return ResponseEntity.ok(showService.getAllShows(pageRequest,movie,theater));
     }

@@ -122,8 +122,10 @@ public class BookingService {
              Sort.Order.desc("createdAt")
         );
 
+        int maxPageSize = 20;
+        int pageSize =  Math.min(maxPageSize,Math.abs(size));
 
-        PageRequest pageRequest = PageRequest.of(page,size,sort);
+        PageRequest pageRequest = PageRequest.of(page,pageSize,sort);
 
         Page<Booking> bookings = bookingRepository.findByUserId(pageRequest,id);
 
@@ -138,8 +140,10 @@ public class BookingService {
                 Sort.Order.desc("createdAt")
         );
 
+        int maxPageSize = 20;
+        int pageSize =  Math.min(maxPageSize,Math.abs(size));
 
-        PageRequest pageRequest = PageRequest.of(page,size,sort);
+        PageRequest pageRequest = PageRequest.of(page,pageSize,sort);
 
         Page<Booking> bookings =  bookingRepository.findByShowId(id,pageRequest);
 
@@ -187,13 +191,15 @@ public class BookingService {
         }
     }
 
-    public PaginationResponse<Booking> getBookingbyUseridandStatus(Integer offset,Integer pageSize,Long id,BookingStatus status) {
+    public PaginationResponse<Booking> getBookingbyUseridandStatus(Integer offset,Integer size,Long id,BookingStatus status) {
 
         Sort sort = Sort.by(
                 Sort.Order.asc("show.showTime"),
                 Sort.Order.desc("createdAt")
         );
 
+        int maxPageSize = 20;
+        int pageSize =  Math.min(maxPageSize,Math.abs(size));
 
         PageRequest pageRequest = PageRequest.of(offset,pageSize,sort);
 
@@ -223,8 +229,10 @@ public class BookingService {
                 Sort.Order.desc("createdAt")
         );
 
+        int maxPageSize = 20;
+        int pageSize =  Math.min(maxPageSize,Math.abs(size));
 
-        PageRequest pageRequest = PageRequest.of(page,size,sort);
+        PageRequest pageRequest = PageRequest.of(page,pageSize,sort);
 
         Page<Booking> bookings;
 

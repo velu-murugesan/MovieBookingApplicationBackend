@@ -82,6 +82,8 @@ public class ShowService {
 
     public PaginationResponse<Show> getAllShows(PageRequest pageRequest, String movie, String theater) {
 
+
+
         Page<Show> shows;
 
         if(movie != null && theater != null){
