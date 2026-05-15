@@ -23,7 +23,7 @@ public class Movie {
     private String genre;
     private String language;
     private Integer duration;
-    private LocalDate release_date;
+    private LocalDate releaseDate;
 
     @OneToMany(mappedBy = "movie",fetch = FetchType.LAZY)
     @JsonIgnore

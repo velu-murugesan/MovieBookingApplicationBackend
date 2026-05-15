@@ -5,6 +5,7 @@ import com.velu.MovieBookingApplication.entity.Movie;
 import com.velu.MovieBookingApplication.service.MovieService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -38,7 +39,10 @@ public class MovieController {
 
          int maxPageSize = 20;
          int pageSize =  Math.min(maxPageSize,Math.abs(size));
-         PageRequest pageRequest = PageRequest.of(page,pageSize);
+         Sort sort = Sort.by(
+                 Sort.Order.asc("release_date")
+         );
+         PageRequest pageRequest = PageRequest.of(page,pageSize,sort);
 
         return ResponseEntity.ok(movieService.getAllMovies(pageRequest,language,genre,title));
 

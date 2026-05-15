@@ -32,8 +32,6 @@ public class Utils {
                    .email(user.getEmail())
                    .username(user.getUsername())
                    .build();
-
-
        }
 
 

@@ -1,12 +1,19 @@
 package com.velu.MovieBookingApplication.entity;
 import com.velu.MovieBookingApplication.enums.BookingStatus;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
+@Builder
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(
         name = "bookings",
         indexes = {

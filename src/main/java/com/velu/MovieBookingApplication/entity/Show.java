@@ -1,16 +1,24 @@
 package com.velu.MovieBookingApplication.entity;
-
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
+@Builder
 @Data
-@Table(name = "shows")
+@NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "shows" , uniqueConstraints = {
+        @UniqueConstraint(
+                columnNames = {"showTime","theater_id","movie_id"}
+        )
+})
 public class Show {
 
     @Id

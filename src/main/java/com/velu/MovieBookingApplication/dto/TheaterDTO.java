@@ -1,6 +1,5 @@
 package com.velu.MovieBookingApplication.dto;
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -20,4 +19,11 @@ public class TheaterDTO {
     @Min(value = 500,message = "Theater Capacity Minimum 500")
     @Max(value = 5000,message = "Theater Capacity Maximum 5000")
     private Integer theaterCapacity;
+
+    public TheaterDTO(String theaterName, String theaterLocation, String theaterScreenType, Integer theaterCapacity) {
+        this.theaterName = theaterName;
+        this.theaterLocation = theaterLocation;
+        this.theaterScreenType = theaterScreenType;
+        this.theaterCapacity = theaterCapacity;
+    }
 }

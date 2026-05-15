@@ -1,15 +1,11 @@
 package com.velu.MovieBookingApplication.dtoresponse;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
+import lombok.*;
 import java.util.List;
 
 @Data
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor
+@RequiredArgsConstructor
 public class PaginationResponse<T> {
 
    private List<T> content;
@@ -18,4 +14,5 @@ public class PaginationResponse<T> {
    private int totalElements;
    private int totalPages;
    private boolean last;
+
 }

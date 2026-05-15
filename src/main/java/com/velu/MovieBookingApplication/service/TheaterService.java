@@ -20,6 +20,10 @@ public class TheaterService {
 
     public Theater addTheater(TheaterDTO theaterDTO) {
 
+        if(theaterRepository.existsByTheaterNameAndTheaterLocationAndTheaterScreenType(theaterDTO.getTheaterName(),theaterDTO.getTheaterLocation(),theaterDTO.getTheaterScreenType())){
+             throw new ResponseStatusException(HttpStatus.CONFLICT,"Theater is already exist");
+        }
+
         Theater theater = new Theater();
         theater.setTheaterName(theaterDTO.getTheaterName());
         theater.setTheaterScreenType(theaterDTO.getTheaterScreenType());
@@ -42,7 +46,6 @@ public class TheaterService {
 
     public PaginationResponse<Theater> getTheaterByLocation(Integer page, Integer size, String location) {
 
-//         -128 to 127 will be store inside integer constant pool
 
                     int maxPageSize = 20;
                     int pageSize =  Math.min(maxPageSize,Math.abs(size));
@@ -65,11 +68,9 @@ public class TheaterService {
     }
 
     public void deleteTheater(Long id) {
-
         if(!theaterRepository.existsById(id)){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,"theater id is not exist");
         }
-
         theaterRepository.deleteById(id);
     }
 }

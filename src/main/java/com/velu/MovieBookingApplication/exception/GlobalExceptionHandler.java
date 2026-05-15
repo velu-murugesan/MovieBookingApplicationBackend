@@ -7,13 +7,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+
 
 @Slf4j
 @RestControllerAdvice
@@ -67,23 +66,6 @@ public class GlobalExceptionHandler {
                        request.getRequestURI()
                );
                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
-    }
-
-    @ExceptionHandler(MissingServletRequestParameterException.class)
-    public ResponseEntity<ErrorResponse> handleMissingParam(
-            MissingServletRequestParameterException ex,
-            HttpServletRequest request
-    ) {
-        return  new ResponseEntity<ErrorResponse>(
-                new ErrorResponse(
-                        LocalDate.now(),
-                        ex.getStatusCode().value(),
-                        ex.getStatusCode().toString(),
-                        "Missing request parameter" + ex.getParameterName(),
-                        request.getRequestURI()
-                ),
-                ex.getStatusCode()
-        );
     }
 
 

@@ -15,8 +15,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -37,6 +37,11 @@ public class ShowService {
 
         Theater theater = theaterRepository.findById(showDTO.getTheater_id()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No theater found for this id" + " " + showDTO.getTheater_id()));
 
+
+        if(showRepository.existsByShowTimeAndMovieAndTheater(showDTO.getShowTime(),movie,theater)){
+            throw new ResponseStatusException(HttpStatus.CONFLICT,"show is already exist");
+        }
+
         Show show = new Show();
         show.setPrice(showDTO.getPrice());
         show.setShowTime(showDTO.getShowTime());
@@ -49,7 +54,7 @@ public class ShowService {
 
     public Show updateShow(Long id, ShowDTO showDTO) {
 
-       Show show =  showRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"No Movie found for this id" + " " + id));
+       Show show =  showRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No movie found for this id" + " " + showDTO.getMovie_id()));
 
         Movie movie = movieRepository.findById(showDTO.getMovie_id()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"No movie found for this id" + " " + showDTO.getMovie_id()));
 
@@ -71,32 +76,27 @@ public class ShowService {
 
        List<Booking> bookings =  showRepository.findById(id).get().getBookings();
 
-
         if(!bookings.isEmpty()){
             throw new ResponseStatusException(HttpStatus.CONFLICT,"Can't delete show with existing bookings");
         }
         else showRepository.deleteById(id);
 
-
     }
 
     public PaginationResponse<Show> getAllShows(PageRequest pageRequest, String movie, String theater) {
 
-
-
         Page<Show> shows;
 
-        if(movie != null && theater != null){
+        if(movie != null && theater != null && !movie.isEmpty() && !theater.isEmpty()){
             shows = showRepository.findShowsByMovieAndTheater(pageRequest,movie,theater);
         }
-        if(movie != null){
+        else if(movie != null && !movie.isEmpty()){
           shows = showRepository.findShowsByMovie(pageRequest,movie);
-        }else if(theater != null){
+        }else if(theater != null && !theater.isEmpty()){
           shows =  showRepository.findShowsByTheater(pageRequest,theater);
+        }else{
+            shows = showRepository.findAll(pageRequest);
         }
-
-       shows = showRepository.findAll(pageRequest);
-
         return Utils.convertPageToPaginationResponse(shows);
 
     }

@@ -1,30 +1,29 @@
 package com.velu.MovieBookingApplication.filters;
 import com.velu.MovieBookingApplication.Repository.UserRepository;
+import com.velu.MovieBookingApplication.service.CustomUserDetailsService;
 import com.velu.MovieBookingApplication.service.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.annotation.Order;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import org.springframework.web.server.ResponseStatusException;
 import java.io.IOException;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Collection;
 
 @Component
-@Order(1)
 public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private CustomUserDetailsService customUserDetailsService;
 
     @Autowired
     private JwtService jwtService;
@@ -50,13 +49,10 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
        if(username != null && SecurityContextHolder.getContext().getAuthentication() == null){
 
-           var userdetails = userRepository.findByUsername(username)
-                   .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"user not found"));
+           var userdetails = customUserDetailsService.loadUserByUsername(username);
 
            if(jwtService.isTokenValid(jwtToken,userdetails)){
-               List<SimpleGrantedAuthority> authorities = userdetails.getRoles().stream()
-                       .map(SimpleGrantedAuthority::new)
-                       .collect(Collectors.toList());
+               Collection<? extends GrantedAuthority> authorities =  userdetails.getAuthorities();
 
                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userdetails,null,authorities);
 

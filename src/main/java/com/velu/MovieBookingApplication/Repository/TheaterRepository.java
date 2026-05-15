@@ -10,4 +10,5 @@ public interface TheaterRepository extends JpaRepository<Theater, Long> {
 
    Page<Theater> findByTheaterLocation(PageRequest pageRequest,String location);
    Boolean existsByTheaterLocation(String location);
+   Boolean existsByTheaterNameAndTheaterLocationAndTheaterScreenType(String theaterName,String theaterLocation,String theaterScreenType);
 }

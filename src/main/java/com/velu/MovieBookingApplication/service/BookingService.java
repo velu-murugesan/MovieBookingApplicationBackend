@@ -17,7 +17,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
@@ -36,16 +35,16 @@ public class BookingService {
     @Transactional
     public Booking createBooking(BookingDTO bookingDto) {
 
-            Booking booking = new Booking();
+                Booking booking = new Booking();
 
-                Show show = showRepository.findByIdForUpdate(bookingDto.getShowId());
+                Show show = showRepository.findByIdForUpdate(bookingDto.getShowId()).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"show is not found"));
 
                 if(bookingDto.getNumberOfSeats() <= 0){
                      throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"At least one seat must be selected");
                 }
 
                 if(!isSeatAvailable(show,bookingDto.getNumberOfSeats())){
-                    throw  new ResponseStatusException(HttpStatus.CONFLICT ,"Not enough seat are available");
+                    throw  new ResponseStatusException(HttpStatus.CONFLICT ,"Not enough seats are there");
                 }
 
                 if(bookingDto.getSeatNumbers().size() != bookingDto.getNumberOfSeats()){
@@ -72,7 +71,7 @@ public class BookingService {
     }
 
 
-    private void validateDuplicateSeats(Show show, List<String> seatNumbers) {
+    public void validateDuplicateSeats(Show show, List<String> seatNumbers) {
 
     Set<String> occupiedSeats  =    show.getBookings().stream()
                 .filter(booking -> booking.getBookingStatus() != BookingStatus.CANCELLED)
@@ -88,7 +87,7 @@ public class BookingService {
 
     }
 
-    private boolean isSeatAvailable(Show show, Integer numberOfSeats) {
+    public boolean isSeatAvailable(Show show, Integer numberOfSeats) {
 
      int bookedSeats =  show.getBookings().stream()
                 .filter(booking -> booking.getBookingStatus() != BookingStatus.CANCELLED)
@@ -113,7 +112,7 @@ public class BookingService {
         booking.setCreatedAt(LocalDateTime.now());
         booking.setNumberOfSeats(bookingDto.getNumberOfSeats());
 
-        return booking;
+        return bookingRepository.save(booking);
     }
 
     public PaginationResponse<Booking> getUserBookings(Integer page,Integer size,Long id) {

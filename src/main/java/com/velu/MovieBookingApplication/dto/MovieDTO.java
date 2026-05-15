@@ -22,5 +22,6 @@ public class MovieDTO {
     private Integer duration;
     @NotNull(message = "releaseDate is required")
     @PastOrPresent(message = "movie releaseDate should not be in future")
-    private LocalDate release_date;
+    private LocalDate releaseDate;
+
 }

@@ -7,7 +7,6 @@ import com.velu.MovieBookingApplication.entity.Movie;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -21,14 +20,17 @@ public class MovieService {
 
    public Movie addMovie(MovieDTO movieDTO){
 
+         if(movieRepository.existsByNameAndLanguageAndGenreAndReleaseDate(movieDTO.getName(),movieDTO.getLanguage(),movieDTO.getGenre(),movieDTO.getReleaseDate())){
+             throw new ResponseStatusException(HttpStatus.CONFLICT,"movie is already exist");
+         }
+
          Movie movie = new Movie();
          movie.setName(movieDTO.getName());
          movie.setDescription(movieDTO.getDescription());
          movie.setGenre(movieDTO.getGenre());
-         movie.setRelease_date(movieDTO.getRelease_date());
+         movie.setReleaseDate(movieDTO.getReleaseDate());
          movie.setLanguage(movieDTO.getLanguage());
          movie.setDuration(movieDTO.getDuration());
-
          return movieRepository.save(movie);
    }
 
@@ -37,12 +39,11 @@ public class MovieService {
 
        Movie movie = movieRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"No Movie Found for the id" + " " + id));
 
-        System.out.println(movieDTO.getDuration());
 
        movie.setName(movieDTO.getName());
        movie.setDescription(movieDTO.getDescription());
        movie.setGenre(movieDTO.getGenre());
-       movie.setRelease_date(movieDTO.getRelease_date());
+       movie.setReleaseDate(movieDTO.getReleaseDate());
        movie.setDuration(movieDTO.getDuration());
        movie.setLanguage(movieDTO.getLanguage());
 
@@ -59,32 +60,31 @@ public class MovieService {
 
     public PaginationResponse<Movie> getAllMovies(PageRequest pageRequest, String language, String genre, String name) {
 
-        Sort sort = Sort.by(
-                Sort.Order.asc("release_date")
-        );
-
-
         Page<Movie> movies;
 
-        if(name != null && genre != null && language != null){
-            movies = movieRepository.findAll(pageRequest);
-        }
-        else if(name != null && genre != null){
+       if(name != null && genre != null && !name.isBlank() && !genre.isBlank()){
+           System.out.println("1");
             movies = movieRepository.findMoviesByNameAndGenre(pageRequest,name,genre);
         }
-        else if(genre != null && language != null){
+        else if(genre != null && language != null && !language.isBlank() && !genre.isBlank()){
+           System.out.println("2");
             movies = movieRepository.findMoviesByLanguageAndGenre(pageRequest,language,genre);
-        }else if(language != null && name != null){
+        }else if(language != null && name != null && !name.isBlank() && !language.isBlank()){
+            System.out.println("3");
             movies = movieRepository.findMoviesByLanguageAndName(pageRequest,language,name);
         }
-        else if(name != null){
-            movies = movieRepository.findMoviesByName(pageRequest.withSort(sort),name);
+        else if(name != null && !name.isBlank()){
+           System.out.println("4");
+            movies = movieRepository.findMoviesByName(pageRequest,name);
         }
-        else if(genre != null){
+        else if(genre != null && !genre.isBlank()){
+           System.out.println("5");
             movies = movieRepository.findMoviesByGenre(genre,pageRequest);
-        }else if(language != null){
+        }else if(language != null && !language.isBlank()){
+           System.out.println("6");
             movies = movieRepository.findMoviesByLanguage(language,pageRequest);
         }else{
+           System.out.println("7");
             movies = movieRepository.findAll(pageRequest);
         }
 
